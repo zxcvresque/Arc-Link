@@ -20,7 +20,7 @@ Instead of spamming messages, the bot:
   - an **inactivity window** (e.g. 2–3s) expires
 - then shows the correct buttons based on what was detected
 
-<details> <summary> Session Panel Detailed Examples for Understanding: (Click to expand) </summary>
+# <details> <summary> Session Panel Detailed Examples for Understanding: (Click to expand) </summary>
 
 ### 🧾 Session Panel — Textual UI Examples (Emojis)
 
