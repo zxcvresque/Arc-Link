@@ -149,11 +149,10 @@ Bot asks:
 
 ---
 
-## 🗺️ Mermaid — Full Flow Diagram (GitHub-Compatible + Emojis)
+## 🗺️ Mermaid — Full Flow Diagram 
 
-> ✅ Note: This Mermaid syntax avoids GitHub parse errors by using:
+> ✅ Note: This flowchart explains the flow for easy understanding.
 > - quoted node labels
-> - `<br/>` instead of `\n`
 
 ```mermaid
 flowchart TD
