@@ -1,4 +1,4 @@
-# 🤖 AIO File Utility Bot — Zip 🗜️ / Unzip 📦 / Merge 🧩 / FTL 🔗 (Buttons-First)
+# 🤖 ARC-LINK: AIO File Utility Bot — Zip 🗜️ / Unzip 📦 / Merge 🧩 / FTL 🔗 (Buttons-First)
 
 An **all-in-one Telegram bot** that auto-detects what users send (archives vs normal files) and responds using a **single Session Panel** (buttons-first, minimal chat spam).
 
