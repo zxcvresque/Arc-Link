@@ -586,7 +586,6 @@ flowchart TD
   N --> AC
   AC --> AD["🔗 Generate Stream + Direct links<br/>📋 Copy All / Paging"]
 ```
-```
 
 ---
 
