@@ -545,12 +545,47 @@ flowchart TD
   F --> H{"📄 Non-archives only?"}
   F --> I{"🧩 Mixed batch?"}
 
+  %% Archives only
   G --> J{"📦 How many archives?"}
-  J -->|"1️⃣ One"| K["📦 Single Archive Menu"]
-  J -->|"2️⃣+ Many"| L["📦 Multi-Archive Menu"]
+  J -->|"1️⃣ One"| K["📦 Single Archive Menu<br/>📂 Unzip · 🧾 List · 🎯 Extract selected<br/>🔐 Password · ⚙️ Settings · ❌ Cancel"]
+  J -->|"2️⃣+ Many"| L["📦 Multi-Archive Menu<br/>🧩 Parts Mode · 📦 Separate Unzip<br/>🧩 Merge → Rezip · 🧾 List · ❌ Cancel"]
 
-  H --> M["📄 Non-Archive Menu"]
-  I --> N["🧩 Mixed Menu"]
+  %% Non-archives only
+  H --> M["📄 Non-Archive Menu<br/>🔗 Get Links (FTL) · 🗜 Make Archive<br/>🧾 List · ❌ Cancel"]
+
+  %% Mixed
+  I --> N["🧩 Mixed Menu<br/>📦 Archive actions · 🔗 Links for non-archives<br/>🗜 Zip everything · 🧾 List · ❌ Cancel"]
+
+  %% Password extraction flow (applies to archive menus)
+  K --> O{"🔒 Protected archive?"}
+  L --> O
+  O -->|"Yes 🔐"| P["🔐 Ask user for password<br/>Store per session only"]
+  P --> Q["📦 Retry extraction"]
+  O -->|"No ✅"| R["📤 Upload extracted files"]
+
+  %% Remove password & send (optional after successful extraction)
+  R --> S{"🔓 Remove password & send?"}
+  S -->|"Yes"| T["🗜 Rezip without password<br/>Send new archive split if needed"]
+  S -->|"No"| U["✅ Done"]
+
+  %% Zip flow (split uploads) from non-archive or mixed menus
+  M --> V{"🗜 Make Archive chosen?"}
+  N --> V
+  V --> W["⚙️ Choose format + part size<br/>ZIP/7Z · 1900MiB/Custom"]
+
+  %% Add password to output archive (optional during zip settings)
+  W --> X{"🔐 Add password to archive?"}
+  X -->|"Yes"| Y["🔐 Ask password input<br/>Encrypt output archive"]
+  X -->|"No"| Z["🔓 No encryption"]
+
+  W --> AA["🗜 Create archive"]
+  AA --> AB["📤 Send parts<br/>part001 · part002 · ... ✅"]
+
+  %% FTL flow from non-archive or mixed menus
+  M --> AC{"🔗 FTL chosen?"}
+  N --> AC
+  AC --> AD["🔗 Generate Stream + Direct links<br/>📋 Copy All / Paging"]
+```
 ```
 
 ---
