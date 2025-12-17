@@ -20,6 +20,232 @@ Instead of spamming messages, the bot:
   - an **inactivity window** (e.g. 2–3s) expires
 - then shows the correct buttons based on what was detected
 
+<details> <summary> Session Panel Detailed Examples for Understanding: (Click to expand) </summary>
+
+### 🧾 Session Panel — Textual UI Examples (Emojis)
+
+> Below are **mock panels** showing how the bot’s **single edited Session Panel** message can look in each scenario.  
+> Buttons are represented as `[🔘 Button]`.
+
+---
+
+### 🟦 0) Collecting phase (live updates while user is sending)
+
+**🧾 Session Panel**
+```text
+📥 Receiving files…
+📦 Archives: 0   📄 Files: 3
+📊 Total size: 842 MB
+⏳ Waiting for more… (auto-finish in 2s)
+```
+
+Buttons:  
+[✅ Done sending] [🧾 List] [❌ Cancel]
+
+---
+
+### 📦 1) Single archive detected (1 file)
+
+**🧾 Session Panel**
+```text
+📦 Archive detected: pack.zip
+📊 Size: 1.6 GB   |   🔒 Password: Unknown
+
+What do you want to do?
+```
+
+Buttons:  
+[📂 Unzip] [🧾 List contents] [🎯 Extract selected]  
+[🔐 Password] [⚙️ Settings] [❌ Cancel]
+
+---
+
+### 🔒 2) Protected archive → bot asks for password
+
+**🧾 Session Panel**
+```text
+🔒 Protected archive detected: protected.zip
+❗ Password required to extract.
+
+Send the password now (as a message), or cancel.
+```
+
+Buttons:  
+[🔐 Enter password] [❌ Cancel]
+
+✅ After user sends password:
+
+**🧾 Session Panel**
+```text
+🔐 Password received (session only)
+📦 Extracting… 37%
+```
+
+Buttons:  
+[❌ Cancel]
+
+---
+
+### 🔓 3) After extracting protected archive → remove/add password & send
+
+**🧾 Session Panel**
+```text
+✅ Extracted successfully: protected.zip
+🔐 Password used: Yes (session)
+
+What next?
+```
+
+Buttons:  
+[✅ Send extracted files]  
+[🔓 Remove password & send] [🔐 Add password & send]  
+[❌ Cancel]
+
+---
+
+### 📦📦 4) Multiple archives detected → choose handling mode
+
+**🧾 Session Panel**
+```text
+📦 4 archives detected
+📊 Total size: 5.8 GB
+
+🧠 Detected pattern: 🧩 Parts of one archive (High confidence)
+Choose how to proceed:
+```
+
+Buttons:  
+[🧩 Parts Mode Unzip] [📦 Separate Unzip]  
+[🧩 Merge → Rezip] [🧾 List] [❌ Cancel]
+
+---
+
+### 🧩 5) Parts Mode chosen → missing part check
+
+✅ All parts present:
+
+**🧾 Session Panel**
+```text
+🧩 Parts Mode selected
+🔎 Checking parts…
+
+✅ Found: 12/12 parts
+Proceed to extract?
+```
+
+Buttons:  
+[📂 Unzip now] [🧾 List contents] [❌ Cancel]
+
+⚠️ Missing parts detected:
+
+**🧾 Session Panel**
+```text
+🧩 Parts Mode selected
+🔎 Checking parts…
+
+⚠️ Missing parts detected
+Found: 10/12 parts
+
+Continue anyway (may fail) or cancel?
+```
+
+Buttons:  
+[⚠️ Force unzip] [❌ Cancel]
+
+---
+
+### 📄 6) Non-archives detected → choose FTL or Zip
+
+**🧾 Session Panel**
+```text
+📄 7 files detected (non-archive)
+📊 Total size: 1.2 GB
+
+Choose a mode:
+```
+
+Buttons:  
+[🔗 Get Links (FTL)] [🗜 Make Archive]  
+[🧾 List] [❌ Cancel]
+
+---
+
+### 🔗 7) FTL chosen → pick link type + paging
+
+**🧾 Session Panel**
+```text
+🔗 FTL mode selected
+📄 Files: 7
+
+Choose link type:
+```
+
+Buttons:  
+[🎬 Stream links] [⬇️ Direct links] [📋 Copy all] [❌ Cancel]
+
+After generating (paged):
+
+**🧾 Session Panel**
+```text
+✅ Links ready (Page 1/2)
+1) file1.mp4   🎬 Stream | ⬇️ Direct
+2) file2.mp4   🎬 Stream | ⬇️ Direct
+3) file3.mp4   🎬 Stream | ⬇️ Direct
+```
+
+Buttons:  
+[⏭ Next page] [📋 Copy all] [❌ Cancel]
+
+---
+
+### 🗜 8) Zip chosen → choose format, part size, password
+
+**🧾 Session Panel**
+```text
+🗜 Zip mode selected
+📄 Files: 12
+📊 Total size: 6.4 GB
+
+Choose archive format:
+```
+
+Buttons:  
+[🗜 ZIP] [🧊 7Z] [⬅️ Back] [❌ Cancel]
+
+Next:
+
+**🧾 Session Panel**
+```text
+📦 Choose part size (Telegram-safe):
+```
+
+Buttons:  
+[1900MiB ✅ Recommended] [1024MiB] [Custom ✍️] [⬅️ Back] [❌ Cancel]
+
+Optional password:
+
+**🧾 Session Panel**
+```text
+🔐 Add password to output archive?
+(If you skip, archive will be unprotected.)
+```
+
+Buttons:  
+[🔐 Add password] [🔓 Skip] [⬅️ Back] [❌ Cancel]
+
+After starting:
+
+**🧾 Session Panel**
+```text
+🗜 Creating archive… 41%
+📦 Output will be split into parts if needed.
+```
+
+Buttons:  
+[❌ Cancel]
+
+</details>
+
 ---
 
 ## 🧠 Smart Detection (Auto + Override)
