@@ -6,11 +6,39 @@ An **all-in-one Telegram bot** that auto-detects what users send (archives vs no
 ✅ 📦 Unzip (single / multi-part / multiple archives)  
 ✅ 🧩 Merge (extract → combine → re-zip)  
 ✅ 🔐 Password support (extract protected archives + add/remove password on output)  
-✅ 🔗 FTL (File-To-Link: direct download + stream links)
+✅ 🔗 FTL (File-To-Link: direct download + stream links)  
+✅ 🔐 Authorization + DM-only access control  
+✅ 📊 Stats (queue count, usage, disk space)  
+✅ 🛠️ Admin Panel (live stats + auth/logs management)  
+✅ 🧾 Logs Channel (file/job lifecycle logs)
+
+---
+
+## 🔐 Authorization & Access Control (DM-only)
+
+This bot is designed to work **only in private chat (DM)**.
+
+### ✅ Who can use the bot?
+A user is allowed if **either**:
+- 👥 They are a member of the **Main Group** (`MAIN_GROUP_ID` in `.env`)  
+  *(the bot checks membership via `getChatMember` — the bot must be in that group)*  
+**OR**
+- ✅ They are added to the bot’s **Authorization List** (managed by admins)
+
+### 🚫 Who is blocked?
+- Any chat that is **not DM** (groups/channels): bot replies with a short “DM me” notice
+- Any user who is **not in Main Group** and **not in Authorization List**
+
+### 🛠️ Who manages access?
+Admins (from `ADMIN_IDS`) can manage everything via **🛠️ Admin Panel**:
+- Add/Remove users from Authorization List
+- Change Main Group ID (runtime)
+- Configure Logs Channel (runtime)
 
 ---
 
 ## ✨ Key UX: Session Panel (One Message, Always Updated)
+
 Instead of spamming messages, the bot:
 
 - creates **one panel message**
@@ -20,8 +48,8 @@ Instead of spamming messages, the bot:
   - an **inactivity window** (e.g. 2–3s) expires
 - then shows the correct buttons based on what was detected
 
-### Session Panel Detailed Examples for Understanding: 
-<details> <summary> (Click to expand) </summary>
+<details>
+<summary><b>🧾 Session Panel Detailed Examples (click to expand)</b></summary>
 
 ### 🧾 Session Panel — Textual UI Examples (Emojis)
 
@@ -250,7 +278,8 @@ Buttons:
 ---
 
 ## 🧠 Smart Detection (Auto + Override)
-The bot classifies the batch into:
+
+The bot classifies the current batch into:
 
 - 📦 **Archives only**
 - 📄 **Non-archives only**
@@ -292,7 +321,7 @@ If detection is unsure, user can override via buttons:
 - ✅ Password remembered **per session only**
 - ✅ After extraction, user can optionally:
   - 🔓 **Remove password & send** (rezip unencrypted)
-  - 🔐 **Add password & send** (rezip encrypted, if desired)
+  - 🔐 **Add password & send** (rezip encrypted)
 
 ### 🧩 Merge / Re-Zip
 For multiple archives in a batch:
@@ -305,22 +334,42 @@ For multiple archives in a batch:
 - ✅ Paging for many files (avoids FloodWait spam)
 - ✅ 📋 Copy all links
 
-### 🧼 Reliability / Quality
-- ✅ One active job per user (prevents collisions)
-- ✅ Cancel anytime ❌
-- ✅ Session TTL auto-expire (e.g. 30–60 min)
-- ✅ Optional: disk-space guard, missing-part checks
+### 🔐 Authorization System
+- ✅ DM-only usage (no group usage)
+- ✅ Allow access if user is in **Main Group** OR in **Authorization List**
+- ✅ Admin-managed Authorization List (add/remove)
+- ✅ Admin can change Main Group ID at runtime
+
+### 📊 Stats
+- ✅ Shows **queue count** (how many jobs waiting/running — not full job details)
+- ✅ Shows usage totals (jobs processed, unique users, uptime)
+- ✅ Shows free disk space (+ optional memory/CPU)
+- ✅ Admin version includes “who is currently using the bot”
+
+### 🛠️ Admin Panel
+- ✅ Live stats: connected users, active sessions, queue counts
+- ✅ Manage Authorization List (add/remove users)
+- ✅ Change Main Group ID (runtime)
+- ✅ Configure Logs Channel (runtime)
+- ✅ Enable/Disable logs + choose what to log
+
+### 🧾 Logs System (Logs Channel)
+- ✅ Sends file/job lifecycle logs to a logs channel
+- ✅ Configurable via `.env` and changeable via Admin Panel
+- ✅ Useful for moderation, debugging, and auditing usage
 
 ---
 
 ## 📌 Commands (Minimal — Buttons First)
-Most users can operate fully via buttons. Commands are just entry points.
 
-### 🧾 General
+Most users can operate fully via buttons. Commands are mainly entry points.
+
+### 🧾 General (Users)
 - `/start` — show help + current session panel
 - `/help` — quick usage
 - `/commands` — list all commands
 - `/cancel` — cancel current job/session
+- `/stats` — show bot stats (**queue count, usage, free disk**)  
 
 ### 🗜️ Zip
 - `/add` — start collecting files for zipping
@@ -329,18 +378,120 @@ Most users can operate fully via buttons. Commands are just entry points.
 - `/zipclear` — clear collected files
 
 ### 📦 Unzip / 🔗 FTL (Optional entry points)
-- `/unzip` — show unzip actions for current batch
-- `/ftl` — show link generation actions
+- `/unzip` — show unzip actions for current batch (optional)
+- `/ftl` — show link generation actions (optional)
+
+### 🛠️ Admin (Admins only)
+- `/admin` — open **Admin Panel**
+- `/logs` — quick toggle or logs preview (optional; can also live inside Admin Panel)
 
 ### 🖼️ Extras (Optional)
 - `/addthumb` — set thumbnail (reply to a photo)
 - `/delthumb` — remove thumbnail
 - `/mode` — upload mode (Document / Video etc.)
-- `/stats` — usage/admin stats
+
+---
+
+## 📊 Stats Output (Example)
+
+**User `/stats`**
+```text
+📊 ARC-LINK Stats
+🧾 Queue: 3 (waiting: 2, running: 1)
+👥 Unique users: 148
+✅ Jobs processed: 1,920
+⏱ Uptime: 2d 04h
+
+💾 Disk free: 37.4 GB
+```
+
+**Admin `/admin` → Stats**
+```text
+📊 Admin Stats
+🧾 Queue: 3 (waiting: 2, running: 1)
+🟢 Active sessions: 2
+👥 Connected users: 148
+
+👤 Currently using bot:
+- @user1 (unzipping)
+- @user2 (zipping)
+```
+
+---
+
+## 🛠️ Admin Panel (Buttons UI Example)
+
+```text
+🛠️ Admin Panel — ARC-LINK
+
+📊 Queue: 3 (2 waiting / 1 running)
+🟢 Active sessions: 2
+👥 Connected users: 148
+💾 Disk free: 37.4 GB
+🧾 Logs: ✅ Enabled  |  Channel: -1001234567890
+👥 Main Group: -1009876543210
+```
+
+Buttons:  
+[📊 Stats] [👥 Authorization] [👥 Main Group]  
+[🧾 Logs] [📣 Set Logs Channel] [⚙️ Settings]  
+[❌ Close]
+
+### 👥 Authorization submenu
+```text
+👥 Authorization
+
+✅ Allowed via Main Group: -1009876543210
+✅ Additional allowed users: 23
+
+Send a user ID / @username to add/remove.
+```
+
+Buttons:  
+[➕ Add user] [➖ Remove user] [🧾 View list] [⬅️ Back]
+
+### 🧾 Logs submenu
+```text
+🧾 Logs
+
+Status: ✅ Enabled
+Channel: -1001234567890
+
+Choose what to log:
+```
+
+Buttons:  
+[✅ File added] [✅ Job started] [✅ Job finished] [⚠️ Errors]  
+[📣 Set channel] [🛑 Disable logs] [⬅️ Back]
+
+---
+
+## 🧾 Logs Channel (What gets logged)
+
+When enabled, the bot sends logs like:
+
+```text
+🧾 LOG • Job Completed ✅
+👤 User: @username (123456789)
+🧩 Mode: Merge → Rezip
+📦 Inputs: 3 archives (5.8 GB)
+🗜 Output: merged.part001.zip … merged.part003.zip
+⏱ Time: 03m 42s
+🗓 2025-12-17 13:02:11
+```
+
+Suggested events to log:
+- 📥 File added (name/size/type)
+- ▶️ Job started (mode/settings)
+- ✅ Job completed (outputs/parts)
+- ❌ Job failed (error summary)
+- 🔗 Links generated (count)
 
 ---
 
 ## 🧭 Workflows (Buttons-Only)
+
+> Note: All workflows require **DM** + **Authorization**.
 
 ### 1) 📦 User sends **1 archive**
 Bot shows:
@@ -376,57 +527,65 @@ Bot asks:
 
 ---
 
-## 🗺️ Mermaid — Full Flow Diagram 
-
-> ✅ Note: This flowchart explains the flow for easy understanding.
-> - quoted node labels
+## 🗺️ Mermaid — Authorization Gate + Core Flow
 
 ```mermaid
 flowchart TD
-  A["👤 User starts sending files"] --> B["🧾 Session Panel created/updated"]
-  B --> C{"⏳ Inactivity window<br/>or ✅ Done sending?"}
-  C -->|"✅ Done / Timer ends"| D["🔎 Analyze batch"]
+  A["👤 User sends message"] --> B{"💬 DM chat?"}
+  B -->|"No 🚫"| B1["🚫 Reply: Please DM me to use ARC-LINK"]
+  B -->|"Yes ✅"| C{"🔐 Authorized?"}
 
-  D --> E{"📦 Archives only?"}
-  D --> F{"📄 Non-archives only?"}
-  D --> G{"🧩 Mixed batch?"}
+  C -->|"No 🚫"| C1["🚫 Access denied<br/>Join Main Group or request access"]
+  C -->|"Yes ✅"| D["🧾 Session Panel created/updated"]
 
-  %% Archives only
-  E --> H{"📦 How many archives?"}
-  H -->|"1️⃣ One"| I["📦 Single Archive Menu<br/>📂 Unzip · 🧾 List · 🎯 Extract selected<br/>🔐 Password · ⚙️ Settings · ❌ Cancel"]
-  H -->|"2️⃣+ Many"| J["📦 Multi-Archive Menu<br/>🧩 Parts Mode · 📦 Separate Unzip<br/>🧩 Merge → Rezip · 🧾 List · ❌ Cancel"]
+  D --> E{"⏳ Inactivity window<br/>or ✅ Done sending?"}
+  E -->|"✅ Done / Timer ends"| F["🔎 Analyze batch"]
 
-  %% Non-archives only
-  F --> K["📄 Non-Archive Menu<br/>🔗 Get Links (FTL) · 🗜 Make Archive<br/>🧾 List · ❌ Cancel"]
+  F --> G{"📦 Archives only?"}
+  F --> H{"📄 Non-archives only?"}
+  F --> I{"🧩 Mixed batch?"}
 
-  %% Mixed
-  G --> L["🧩 Mixed Menu<br/>📦 Archive actions · 🔗 Links for non-archives<br/>🗜 Zip everything · 🧾 List · ❌ Cancel"]
+  G --> J{"📦 How many archives?"}
+  J -->|"1️⃣ One"| K["📦 Single Archive Menu"]
+  J -->|"2️⃣+ Many"| L["📦 Multi-Archive Menu"]
 
-  %% Password extraction flow
-  I --> M{"🔒 Protected archive?"}
-  J --> M
-  M -->|"Yes 🔐"| N["🔐 Ask user for password<br/>Store per session only"]
-  N --> O["📦 Retry extraction"]
-  M -->|"No ✅"| P["📤 Upload extracted files"]
+  H --> M["📄 Non-Archive Menu"]
+  I --> N["🧩 Mixed Menu"]
+```
 
-  %% Remove password & send (optional step after successful extraction)
-  P --> W{"🔓 Remove password & send?"}
-  W -->|"Yes"| X["🗜 Rezip without password<br/>Send new archive (split if needed)"]
-  W -->|"No"| Y["✅ Done"]
+---
 
-  %% Zip flow (split uploads)
-  K --> Q{"🗜 Make Archive chosen?"}
-  L --> Q
-  Q --> R["⚙️ Choose format + part size<br/>ZIP/7Z · 1900MiB/Custom"]
-  R --> S["🗜 Create archive"]
-  S --> T["📤 Send parts<br/>part001 · part002 · ... ✅"]
+## ⚙️ Configuration (.env)
 
-  %% Add password to output archive (optional during zip settings)
-  R --> Z{"🔐 Add password to archive?"}
-  Z -->|"Yes"| ZA["🔐 Ask password input<br/>Encrypt output archive"]
-  Z -->|"No"| ZB["🔓 No encryption"]
+```dotenv
+# Telegram
+BOT_TOKEN=123:ABC
+API_ID=123456
+API_HASH=abcdef1234567890
 
-  %% FTL flow
-  K --> U{"🔗 FTL chosen?"}
-  L --> U
-  U --> V["🔗 Generate Stream + Direct links<br/>📋 Copy All / Paging"]
+# Access control
+MAIN_GROUP_ID=-1009876543210
+ADMIN_IDS=123456789,987654321
+
+# Logs
+LOGS_CHANNEL_ID=-1001234567890
+LOGS_ENABLED=true
+
+# Storage (example)
+DB_PATH=./data/bot.db
+DOWNLOAD_DIR=./downloads
+```
+
+> Admin Panel can change **Main Group ID** and **Logs Channel ID** at runtime (persist in DB).
+
+---
+
+## ✅ Developer Notes (Implementation Targets)
+
+- Primary UX = **one Session Panel message** edited throughout a session
+- Authorization gate runs **before** creating/using Session Panel
+- Membership check uses `getChatMember(MAIN_GROUP_ID, user_id)` (bot must be in group)
+- Store Authorization List + runtime config in SQLite/JSON (persist across restarts)
+- `/stats` shows **queue counts**, not verbose per-job status
+- Admin Panel shows “who is using bot” + lets admins manage auth/logs
+- Logs are optional but strongly recommended for debugging + auditing
